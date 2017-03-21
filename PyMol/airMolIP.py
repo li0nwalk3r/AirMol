@@ -21,11 +21,12 @@ class IPserver(Thread):
         self.server_socket=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	self.server_socket.bind(("",8888))
         self.server_socket.listen(1)
+        print("Server waiting for connexion")
         self.client_socket,self.infos=self.server_socket.accept()
         self.connected=True
-        print "connected"
+        print("connected")
         while self.connected: 
-            data= self.client_socket.recv(4096)
+            data= self.client_socket.recv(2048)
             print(data.decode())
             if data=="fin":
                 self.client_socket.close()
@@ -57,13 +58,16 @@ def airMol(self):
     label.rowconfigure(0, pad=3)
     
     def checkCon():
+        t=StringVar()
         if server.connected==True:
-            label=Label(root,text="yes")
+            t.set("yes")
         else:
-            label=Label(root,text="no")
+            t.set("no")
+        label.configure(text=t.get())
         root.after(1000, checkCon)
-
-    root.after(0,checkCon)
+    root.after(1000,checkCon)
+    
+    server.join()
     
 cmd.extend('airMol', airMol)
 
