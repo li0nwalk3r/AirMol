@@ -56,33 +56,37 @@ public class SensorReturn extends AppCompatActivity implements SensorEventListen
         //Method to extract sensors values and prints them into referenced xml TextView
 
         //Rotation vector values
-        float[] rvMove = event.values;
+        float[] values = event.values;
+        for (int i = 0; i < values.length; i++){
+            values[i] = truncate(values[i]);
+        }
         if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
             TextView rotationVector = (TextView) findViewById(R.id.rotation_vector_values);
-            rotationVector.setText("x: " + String.valueOf(rvMove[0]) + "\ny: " + String.valueOf(rvMove[1]) + "\nz: " + String.valueOf(rvMove[2]));
+            rotationVector.setText("x: " + String.valueOf(values[0]) + "\ny: " + String.valueOf(values[1]) + "\nz: " + String.valueOf(values[2]));
         }
 
         //Gyroscope values
-        float[] gMove = event.values;
         if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
             TextView gyroscope = (TextView) findViewById(R.id.gyroscope_values);
-            gyroscope.setText("x: " + String.valueOf(gMove[0]) + "\ny: " + String.valueOf(gMove[1]) + "\nz: " + String.valueOf(gMove[2]));
+            gyroscope.setText("x: " + String.valueOf(values[0]) + "\ny: " + String.valueOf(values[1]) + "\nz: " + String.valueOf(values[2]));
         }
 
         //Accelerometer values
-        float[] aMove = event.values;
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             TextView accelerometer = (TextView) findViewById(R.id.accelerometer_values);
-            accelerometer.setText("x: " + String.valueOf(aMove[0]) + "\ny: " + String.valueOf(aMove[1]) + "\nz: " + String.valueOf(aMove[2]));
+            accelerometer.setText("x: " + String.valueOf(values[0]) + "\ny: " + String.valueOf(values[1]) + "\nz: " + String.valueOf(values[2]));
         }
 
         //Gravity vector values
-        float[] grMove = event.values;
         if (event.sensor.getType() == Sensor.TYPE_GRAVITY) {
             TextView gravity = (TextView) findViewById(R.id.gravity_values);
-            gravity.setText("x: " + String.valueOf(grMove[0]) + "\ny: " + String.valueOf(grMove[1]) + "\nz: " + String.valueOf(grMove[2]));
+            gravity.setText("x: " + String.valueOf(values[0]) + "\ny: " + String.valueOf(values[1]) + "\nz: " + String.valueOf(values[2]));
         }
+    }
 
-
+    public float truncate(float value){
+        float tmp = value * 100;
+        tmp = Math.round(tmp);
+        return tmp / 100;
     }
 }
