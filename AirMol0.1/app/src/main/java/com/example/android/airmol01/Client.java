@@ -20,7 +20,7 @@ public class Client extends AsyncTask<String, Void, Void> { // String : l'adress
             //this.serverAddress = InetAddress.getByName(params[0]);
             Socket socket = new Socket(params[0], port);
             DataOutputStream output = new DataOutputStream(socket.getOutputStream());
-            output.writeUTF("Hello World");
+            output.writeBytes("Hello World");
 
         }catch(Exception e){
             e.printStackTrace();
