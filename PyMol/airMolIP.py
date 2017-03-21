@@ -1,3 +1,4 @@
+
 '''This file is part of AirMol.
 
     AirMol is free software: you can redistribute it and/or modify
@@ -75,7 +76,7 @@ def airMol(self):
     
     def checkCon():
         t=StringVar()
-        if server.connected==True:
+        if server.connected:
             t.set("yes")
         else:
             t.set("no")
@@ -83,7 +84,6 @@ def airMol(self):
         root.after(1000, checkCon)
     root.after(1000,checkCon)
     
-    server.join()
     
 cmd.extend('airMol', airMol)
 
