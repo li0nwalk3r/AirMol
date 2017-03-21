@@ -11,8 +11,8 @@ client, info = socket.accept()
 print "\nCONNEXTION ETABLIE";
 print "\n\t[*] ADRESSE DISTANTE : {}\n\t[*] PORT DISTANT : {}\n\n".format(info[0], info[1])
 
-msg = client.recv(1024)
+msg = client.recv(4096).decode()
 
-print msg.decode()
+print msg
 
 socket.close();

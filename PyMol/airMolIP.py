@@ -47,6 +47,7 @@ class IPserver(Thread):
                 self.client_socket.close()
                 self.connected=False
                 self.server_socket.close()
+                print("Disconnected")
 
     def run(self):
         self.start_server()
