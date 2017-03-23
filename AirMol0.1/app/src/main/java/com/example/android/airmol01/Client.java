@@ -1,8 +1,9 @@
 package com.example.android.airmol01;
 
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.os.Looper;
-import android.os.SystemClock;
+import android.os.Message;
 import android.util.Log;
 
 import java.io.DataOutputStream;
@@ -22,13 +23,27 @@ public class Client extends AsyncTask<String, Void, Void> { // String : l'adress
     public Void doInBackground(String... params) {
         Looper.prepare();
         try {
+
             socket = new Socket(params[0], port);
-            ListenSensor listener = new ListenSensor();
-            DataOutputStream output = new DataOutputStream(socket.getOutputStream());
+            final DataOutputStream output = new DataOutputStream(socket.getOutputStream());
             while (true) {
-                byte[] tmp = listener.getValues().getBytes();
-                output.write(tmp);
-                SystemClock.sleep(2000L);
+                Handler handler = new Handler(){
+                    @Override
+                    public void handleMessage(Message msg){
+                        String data = msg.getData().getString("sensorData");
+                        Log.d("\n\nMESSAGE", data);
+                        try {
+                            output.writeUTF(data);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                };
+
+
+                //byte[] tmp = listener.getValues().getBytes();
+                //output.write(tmp);
+                //SystemClock.sleep(2000L);
             }
 
         } catch (Exception e) {
@@ -41,7 +56,7 @@ public class Client extends AsyncTask<String, Void, Void> { // String : l'adress
         if (this.socket != null) {
             try {
                 socket.close();
-                this.socket = null;
+                socket = null;
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -51,7 +66,7 @@ public class Client extends AsyncTask<String, Void, Void> { // String : l'adress
     public void disconnect() throws IOException {
         if (this.socket != null) {
             this.socket.close();
-            this.socket = null;
+            socket = null;
         }
     }
 }

@@ -14,14 +14,20 @@ public class Connectivity extends AppCompatActivity {
     private Button connection;
     private Button deconnection;
     private String ipServer;
+    private ListenSensor listener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //ListenSensor listener;
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connectivity);
 
         connection = (Button) findViewById(R.id.connexion);
         deconnection = (Button) findViewById(R.id.deconnection);
+
+        listener = new ListenSensor(this);
+        //listener.register();
 
         connection.setEnabled(true);
         deconnection.setEnabled(false);
@@ -43,6 +49,7 @@ public class Connectivity extends AppCompatActivity {
                     connection.setEnabled(false);
                     deconnection.setEnabled(true);
                     client.execute(ipServer);
+                    listener.register();
                 }
                 else{
                     Toast errorConnexion = Toast.makeText(v.getContext(), "Pas d'adresse ip entrée", Toast.LENGTH_LONG);
@@ -58,6 +65,7 @@ public class Connectivity extends AppCompatActivity {
         deconnection.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+                listener.unregister();
                 deconnection.setEnabled(false);
                 connection.setEnabled(true);
                 try {
@@ -67,6 +75,16 @@ public class Connectivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    public void onPause(){
+        super.onPause();
+        this.listener.unregister();
+    }
+
+    public void onResume(){
+        super.onResume();
+        this.listener.register();
     }
 }
 
