@@ -36,4 +36,11 @@
         tools:layout_editor_absoluteX="8dp"
         tools:layout_editor_absoluteY="20dp" />
 
+    <Button
+        android:id="@+id/deconnection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Deconnection"
+        android:layout_marginTop="20dp"/>
+
 </LinearLayout>

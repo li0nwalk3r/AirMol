@@ -11,9 +11,17 @@ client, info = socket.accept()
 print "\nCONNEXTION ETABLIE";
 print "\n\t[*] ADRESSE DISTANTE : {}\n\t[*] PORT DISTANT : {}\n\n".format(info[0], info[1])
 
-msg = ''
-while msg != "fin":
-	msg = client.recv(4096).decode()
-	print(msg)
+msg = "NA"
+
+try:
+	while msg != "":
+		msg = client.recv(2048).decode()
+		print(msg)
+
+except KeyboardInterrupt:
+	socket.close();
+
 
 socket.close();
+
+print("Déconnecté")
