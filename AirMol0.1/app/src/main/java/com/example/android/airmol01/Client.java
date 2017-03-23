@@ -15,8 +15,8 @@ import java.net.Socket;
 
 public class Client extends AsyncTask<String, Void, Void> { // String : l'adresse entrée par l'utilisateur | Void : onProgress (on en a pas) | Void : La valeur retournée par doInBackground
 
-    public int port = 8888;
-    public Socket socket;
+    private int port = 8888;
+    private Socket socket;
 
     @Override
     public Void doInBackground(String... params) {
@@ -38,15 +38,20 @@ public class Client extends AsyncTask<String, Void, Void> { // String : l'adress
     }
 
     public void onPostExecute(Void result){
-        try {
-            socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (this.socket != null) {
+            try {
+                socket.close();
+                this.socket = null;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     public void disconnect() throws IOException {
-        socket.close();
+        if (this.socket != null) {
+            this.socket.close();
+            this.socket = null;
+        }
     }
-
 }

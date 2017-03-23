@@ -38,10 +38,10 @@ public class Connectivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 ipServer = input.getText().toString();
+                client = new Client();
                 if (!ipServer.equals("")) {
                     connection.setEnabled(false);
                     deconnection.setEnabled(true);
-                    client = new Client();
                     client.execute(ipServer);
                 }
                 else{
