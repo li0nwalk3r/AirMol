@@ -54,12 +54,31 @@ public class SensorListener implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-
         data = event.values;
+
+        float thetaRad = (float) (2.0f * Math.acos(data[3]));
+        float thetaDeg = (float) (thetaRad * 180.0f/Math.PI);
+
+        float sinThetaSurDeux = (float) Math.sin(thetaRad/2);
+
+        for (int i = 0; i < 3; i ++){
+            data[i]/=sinThetaSurDeux;
+        }
+        data[3] = thetaDeg;
+
+        String x = String.valueOf(truncate(data[0]));
+        String y = String.valueOf(truncate(data[1]));
+        String z = String.valueOf(truncate(data[2]));
+        String theta = String.valueOf(truncate(data[3]));
+
+        String finalResult = x + ',' + y + ',' + z + ',' + theta;
+        byte[] toSend = finalResult.getBytes();
+
         //Log.d("\nDATA : ", "Hello World !");
         try {
-            output.flush();
-            output.writeUTF(" X : " + String.valueOf(data[0]) + "\n Y : " + String.valueOf(data[1]) + "\n Z : " + String.valueOf(data[2]) + "\n\n");
+            output.write(toSend);
+            //output.writeUTF(" X : " + String.valueOf(x) + "\n  Y : " + String.valueOf(y) + "\n  Z : " + String.valueOf(z) + "\n\n");
+            //output.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -75,4 +94,11 @@ public class SensorListener implements SensorEventListener {
     public void unregister(){
         sensor.unregisterListener(this);
     }
+
+    public float truncate(float valeur){
+        float tmp = valeur * 100;
+        tmp = Math.round(tmp);
+        return tmp / 100;
+    }
+
 }
