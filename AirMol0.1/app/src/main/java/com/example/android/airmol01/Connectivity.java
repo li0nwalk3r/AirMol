@@ -1,25 +1,8 @@
-/*
- *
- *  This file is part of AirMol.
- *
- *     AirMol is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     any later version.
- *
- *     AirMol is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- *     You should have received a copy of the GNU General Public License
- * along with AirMol. If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.example.android.airmol01;
 
-import android.os.AsyncTask;
+import android.content.Context;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -29,17 +12,19 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.net.Socket;
 
-public class Connectivity extends AppCompatActivity {
-    private Client client;
+public class Connectivity extends AppCompatActivity  {
+    public ConnectClient client;
     private Button connection;
     private Button deconnection;
     private String ipServer;
-    private ListenSensor listener;
-    private AsyncTask<String, Void, Void> socket;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //ListenSensor listener;
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+
+        StrictMode.setThreadPolicy(policy);
+
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connectivity);
@@ -47,37 +32,44 @@ public class Connectivity extends AppCompatActivity {
         connection = (Button) findViewById(R.id.connexion);
         deconnection = (Button) findViewById(R.id.deconnection);
 
-        listener = new ListenSensor(this);
-        //listener.register();
-
         connection.setEnabled(true);
         deconnection.setEnabled(false);
 
-        clickHandlerConnexion();
+
+
+        clickHandlerConnexion(this);
 
         clickHandlerDeconnexion();
     }
-    protected void clickHandlerConnexion(){
+    protected void clickHandlerConnexion(final Context context){
         final TextInputEditText input = (TextInputEditText) findViewById(R.id.IP);
 
 
         connection.setOnClickListener(new View.OnClickListener(){
+
+
             @Override
             public void onClick(View v) {
                 ipServer = input.getText().toString();
-                client = new Client();
+
                 if (!ipServer.equals("")) {
+                    try {
+                        client = new ConnectClient(ipServer, context);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     connection.setEnabled(false);
                     deconnection.setEnabled(true);
-                    socket = client.execute(ipServer);
-                    listener.register();
+                    client.start();
                 }
                 else{
                     Toast errorConnexion = Toast.makeText(v.getContext(), "Pas d'adresse ip entrée", Toast.LENGTH_LONG);
                     errorConnexion.show();
                 }
+
             }
         });
+
     }
 
     protected void clickHandlerDeconnexion(){
@@ -86,26 +78,19 @@ public class Connectivity extends AppCompatActivity {
         deconnection.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                listener.unregister();
                 deconnection.setEnabled(false);
                 connection.setEnabled(true);
-                try {
-                    client.disconnect();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                client.cancel();
             }
         });
     }
 
     public void onPause(){
         super.onPause();
-        this.listener.unregister();
     }
 
     public void onResume(){
         super.onResume();
-        this.listener.register();
     }
 }
 
