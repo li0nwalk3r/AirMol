@@ -29,10 +29,11 @@ public class ListenSensor implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        Log.d("\n\nLISTEN SENSOR", event.values.toString());
+        float[] data = event.values;
+        Log.d("\n\nLISTEN SENSOR", String.valueOf(data[0]));
         msg = Message.obtain();
         b = new Bundle();
-        b.putString("sensorData", "LOL");
+        b.putString("sensorData", "TEST");
         this.msg.setData(b);
         sensorData.sendMessage(msg);
     }

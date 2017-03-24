@@ -1,5 +1,6 @@
 package com.example.android.airmol01;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +9,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.net.Socket;
 
 public class Connectivity extends AppCompatActivity {
     private Client client;
@@ -15,6 +17,7 @@ public class Connectivity extends AppCompatActivity {
     private Button deconnection;
     private String ipServer;
     private ListenSensor listener;
+    private AsyncTask<String, Void, Void> socket;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +51,7 @@ public class Connectivity extends AppCompatActivity {
                 if (!ipServer.equals("")) {
                     connection.setEnabled(false);
                     deconnection.setEnabled(true);
-                    client.execute(ipServer);
+                    socket = client.execute(ipServer);
                     listener.register();
                 }
                 else{
