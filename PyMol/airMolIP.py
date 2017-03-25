@@ -13,7 +13,7 @@
 
     You should have received a copy of the GNU General Public License
 along with AirMol. If not, see <http://www.gnu.org/licenses/>.'''
-
+from math import acos,asin,pi,sin
 import socket
 import tkMessageBox
 import tkSimpleDialog
@@ -32,7 +32,9 @@ class IPserver(Thread):
         self.client_socket=socket.socket()
         self.infos=""
         self.connected=False
-    
+
+        self.lastQuaternion=[0.00,0.00,0.00,1.0]
+
     def start_server(self):
         self.server_socket=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	self.server_socket.bind(("",8888))
@@ -42,14 +44,36 @@ class IPserver(Thread):
         self.connected=True
         print("connected")
         while True: 
+            #Envoyer les valeurs de quaternion et recuperer theta apres
             data = self.client_socket.recv(1024).decode('utf-8')
             if(data):
-                finalData = data.split(',')
-                print(finalData)
-                print("\nX : " + finalData[0])
-                print("\nY : " + finalData[1])
-                print("\nZ : " + finalData[2])
-                print("\nTheta : " + finalData[3])
+
+                currentQuaternion = [float(i) for i in (data.split(','))]
+                conjugateQuaternion=[-1*i for i in currentQuaternion[:4]]
+                q1=self.lastQuaternion
+                q2=conjugatedQuaternion
+
+                combinedQuaternion=[
+                        q1[3]*q2[0]+q1[0]*q2[3]+q1[1]*q2[2]-q1[2]*q2[1],
+                        q1[3]*q2[1]-q1[0]*q2[2]+q1[1]*q2[3]+q1[2]*q2[0],
+                        q1[3]*q2[2]+q1[0]*q2[1]-q1[1]*q2[0]+q1[2]*q2[3],
+                        q1[3]*q2[3]-q1[0]*q2[0]-q1[1]*q2[1]-q1[2]*q2[2]
+                        ]
+                
+                self.lastQuaternion=[i for i in currentQuaternion]
+                
+                thetaRad=(2.0*acos(combinedQuaternion[3]))
+                thetaDeg=(thetaRad*180.0/pi)
+                sinThetaSurDeux=sin(thetaRad/2)
+
+                for i in range(3):
+                    combinedQuaternion[i]/=sinThetaSurDeux
+                combinedQuaternion[3]=thetaDeg
+
+                print("\nX : " + combinedQuaternion[0])
+                print("\nY : " + combinedQuaternion[1])
+                print("\nZ : " + combinedQuaternion[2])
+                print("\nTheta : " + combinedQuaternion[3])
                 print ("\n\n")
             else:
                 self.client_socket.close()
