@@ -53,7 +53,7 @@ public class SensorListener implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent event) {
         data = event.values;
-
+/*
         float thetaRad = (float) (2.0f * Math.acos(data[3]));
         float thetaDeg = (float) (thetaRad * 180.0f/Math.PI);
 
@@ -63,7 +63,7 @@ public class SensorListener implements SensorEventListener {
             data[i]/=sinThetaSurDeux;
         }
         data[3] = thetaDeg;
-
+*/
         String x = String.valueOf(truncate(data[0]));
         String y = String.valueOf(truncate(data[1]));
         String z = String.valueOf(truncate(data[2]));
