@@ -41,20 +41,24 @@ class IPserver(Thread):
         self.client_socket,self.infos=self.server_socket.accept()
         self.connected=True
         print("connected")
-        while self.connected: 
+        while True: 
             data = self.client_socket.recv(1024).decode('utf-8')
-            finalData = data.split(',')
-            print(finalData)
-            print("\nX : " + finalData[0])
-            print("\nY : " + finalData[1])
-            print("\nZ : " + finalData[2])
-            print("\nTheta : " + finalData[3])
-            print ("\n\n")
-            if data=="fin":
+            if(data):
+                finalData = data.split(',')
+                print(finalData)
+                print("\nX : " + finalData[0])
+                print("\nY : " + finalData[1])
+                print("\nZ : " + finalData[2])
+                print("\nTheta : " + finalData[3])
+                print ("\n\n")
+            else:
                 self.client_socket.close()
-                self.connected=False
+                #self.connected=False
                 self.server_socket.close()
                 print("Disconnected")
+                break
+
+        #self.client_socket.close()
 
     def run(self):
         self.start_server()
