@@ -23,7 +23,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.util.Log;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -48,7 +47,6 @@ public class SensorListener implements SensorEventListener {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Log.d("\n\nSENSOR OK", "");
     }
 
 
@@ -74,11 +72,8 @@ public class SensorListener implements SensorEventListener {
         String finalResult = x + ',' + y + ',' + z + ',' + theta;
         byte[] toSend = finalResult.getBytes();
 
-        //Log.d("\nDATA : ", "Hello World !");
         try {
             output.write(toSend);
-            //output.writeUTF(" X : " + String.valueOf(x) + "\n  Y : " + String.valueOf(y) + "\n  Z : " + String.valueOf(z) + "\n\n");
-            //output.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }

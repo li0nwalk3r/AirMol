@@ -12,14 +12,13 @@ import java.net.Socket;
  */
 
 public class ConnectClient extends Thread{
-    private Socket mSocket;
+    private Socket Socket;
     private String ipServer;
     private final int port = 8888;
     private Context context;
-    private ConnectedClient client;
+    private SensorListener sensorListener;
 
     public ConnectClient(String ipServer, Context context) throws IOException {
-        Log.d("\n\nCONNEXION1 OK", "");
         this.ipServer = ipServer;
         this.context = context;
     }
@@ -27,20 +26,20 @@ public class ConnectClient extends Thread{
     public void run(){
         Looper.prepare();
         try {
-            this.mSocket = new Socket(this.ipServer, this.port);
+            this.Socket = new Socket(this.ipServer, this.port);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        this.client = new ConnectedClient(this.mSocket, this.context);
-        this.client.start();
+        this.sensorListener = new SensorListener(this.Socket, this.context);
+        this.sensorListener.register();
         Looper.loop();
     }
 
     public void cancel(){
         try {
-            client.cancel();
-            mSocket.close();
+            this.sensorListener.unregister();
+            this.Socket.close();
         }catch (IOException e){
             e.printStackTrace();
         }
