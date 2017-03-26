@@ -41,50 +41,53 @@ class IPserver(Thread):
         self.connected=True
         print("connected")
         while True: 
-            #Envoyer les valeurs de quaternion et recuperer theta apres
-            data = self.client_socket.recv(1024).decode('utf-8')
-            if(data):
+		try:
+            		#Envoyer les valeurs de quaternion et recuperer theta apres
+            		data = self.client_socket.recv(1024).decode('utf-8')
+            		if(data):
 
-                currentQuaternion = [float(i) for i in (data.split(','))]
-                print("current:"+str(currentQuaternion)) 
-                conjugatedQuaternion=[-1*i for i in currentQuaternion[:3]]
-                conjugatedQuaternion.append(currentQuaternion[3])
-                print("conjugated:"+str(conjugatedQuaternion)) 
-                q1=self.lastQuaternion
-                print("q1:"+str(q1)) 
-                q2=conjugatedQuaternion
-                print("q2:"+str(q2)) 
+                		currentQuaternion = [float(i) for i in (data.split(','))]
+                		print("current:"+str(currentQuaternion)) 
+                		conjugatedQuaternion=[-1*i for i in currentQuaternion[:3]]
+                		conjugatedQuaternion.append(currentQuaternion[3])
+                		print("conjugated:"+str(conjugatedQuaternion)) 
+                		q1=self.lastQuaternion
+                		print("q1:"+str(q1)) 
+                		q2=conjugatedQuaternion
+                		print("q2:"+str(q2)) 
                 
-                combinedQuaternion=[
-                        q1[3]*q2[0]+q1[0]*q2[3]+q1[1]*q2[2]-q1[2]*q2[1],
-                        q1[3]*q2[1]-q1[0]*q2[2]+q1[1]*q2[3]+q1[2]*q2[0],
-                        q1[3]*q2[2]+q1[0]*q2[1]-q1[1]*q2[0]+q1[2]*q2[3],
-                        q1[3]*q2[3]-q1[0]*q2[0]-q1[1]*q2[1]-q1[2]*q2[2]
-                        ]
+                		combinedQuaternion=[
+                	        q1[3]*q2[0]+q1[0]*q2[3]+q1[1]*q2[2]-q1[2]*q2[1],
+                        	q1[3]*q2[1]-q1[0]*q2[2]+q1[1]*q2[3]+q1[2]*q2[0],
+                	        q1[3]*q2[2]+q1[0]*q2[1]-q1[1]*q2[0]+q1[2]*q2[3],
+                	        q1[3]*q2[3]-q1[0]*q2[0]-q1[1]*q2[1]-q1[2]*q2[2]
+                	        ]
                 
-                print("conbined:"+str(combinedQuaternion)) 
-                self.lastQuaternion=[i for i in currentQuaternion]
+               			print("conbined:"+str(combinedQuaternion)) 
+                		self.lastQuaternion=[i for i in currentQuaternion]
                 
-                thetaRad=(2.0*acos(combinedQuaternion[3]))
-                thetaDeg=(thetaRad*180.0/pi)
-                sinThetaSurDeux=sin(thetaRad/2)
+                		thetaRad=(2.0*acos(combinedQuaternion[3]))
+                		thetaDeg=(thetaRad*180.0/pi)
+                		sinThetaSurDeux=sin(thetaRad/2)
 
-                for i in range(3):
-                    combinedQuaternion[i]/=sinThetaSurDeux
-                combinedQuaternion[3]=thetaDeg
+                		for i in range(3):
+                		    combinedQuaternion[i]/=sinThetaSurDeux
+                		combinedQuaternion[3]=thetaDeg
 
-                print("\nX : " + str(combinedQuaternion[0]))
-                print("\nY : " + str(combinedQuaternion[1]))
-                print("\nZ : " + str(combinedQuaternion[2]))
-                print("\nTheta : " + str(combinedQuaternion[3]))
-                print ("\n\n")
-            else:
-                self.client_socket.close()
-                #self.connected=False
-                self.server_socket.close()
-                self.connected = False
-                print("Disconnected")
-                break
+                		print("\nX : " + str(combinedQuaternion[0]))
+                		print("\nY : " + str(combinedQuaternion[1]))
+                		print("\nZ : " + str(combinedQuaternion[2]))
+                		print("\nTheta : " + str(combinedQuaternion[3]))
+                		print ("\n\n")
+            		else:
+                		self.client_socket.close()
+                		#self.connected=False
+                		self.server_socket.close()
+                		self.connected = False
+                		print("Disconnected")
+                		break
+		except:
+			pass
 
         #self.client_socket.close()
 
