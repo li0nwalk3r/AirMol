@@ -1,19 +1,16 @@
 
 '''This file is part of AirMol.
-
     AirMol is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     any later version.
-
     AirMol is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-
     You should have received a copy of the GNU General Public License
 along with AirMol. If not, see <http://www.gnu.org/licenses/>.'''
-
+from math import acos,asin,pi,sin
 import socket
 import tkMessageBox
 import tkSimpleDialog
@@ -32,7 +29,9 @@ class IPserver(Thread):
         self.client_socket=socket.socket()
         self.infos=""
         self.connected=False
-    
+
+        self.lastQuaternion=[0.0,0.0,0.0,1.0]
+
     def start_server(self):
         self.server_socket=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	self.server_socket.bind(("",8888))
@@ -42,22 +41,54 @@ class IPserver(Thread):
         self.connected=True
         print("connected")
         while True: 
-            data = self.client_socket.recv(1024).decode('utf-8')
-            if(data):
-                finalData = data.split(',')
-                print(finalData)
-                print("\nX : " + finalData[0])
-                print("\nY : " + finalData[1])
-                print("\nZ : " + finalData[2])
-                print("\nTheta : " + finalData[3])
-                print ("\n\n")
-            else:
-                self.client_socket.close()
-                #self.connected=False
-                self.server_socket.close()
-                self.connected = False
-                print("Disconnected")
-                break
+		try:
+            		#Envoyer les valeurs de quaternion et recuperer theta apres
+            		data = self.client_socket.recv(1024).decode('utf-8')
+            		if(data):
+
+                		currentQuaternion = [float(i) for i in (data.split(','))]
+                		print("current:"+str(currentQuaternion)) 
+                		conjugatedQuaternion=[-1*i for i in currentQuaternion[:3]]
+                		conjugatedQuaternion.append(currentQuaternion[3])
+                		print("conjugated:"+str(conjugatedQuaternion)) 
+                		q1=self.lastQuaternion
+                		print("q1:"+str(q1)) 
+                		q2=conjugatedQuaternion
+                		print("q2:"+str(q2)) 
+                
+                		combinedQuaternion=[
+                	        q1[3]*q2[0]+q1[0]*q2[3]+q1[1]*q2[2]-q1[2]*q2[1],
+                        	q1[3]*q2[1]-q1[0]*q2[2]+q1[1]*q2[3]+q1[2]*q2[0],
+                	        q1[3]*q2[2]+q1[0]*q2[1]-q1[1]*q2[0]+q1[2]*q2[3],
+                	        q1[3]*q2[3]-q1[0]*q2[0]-q1[1]*q2[1]-q1[2]*q2[2]
+                	        ]
+                
+               			print("conbined:"+str(combinedQuaternion)) 
+                		self.lastQuaternion=[i for i in currentQuaternion]
+                
+                		thetaRad=(2.0*acos(combinedQuaternion[3]))
+                		thetaDeg=(thetaRad*180.0/pi)
+                		sinThetaSurDeux=sin(thetaRad/2)
+
+                		for i in range(3):
+                		    combinedQuaternion[i]/=sinThetaSurDeux
+                		combinedQuaternion[3]=thetaDeg
+
+                		print("\nX : " + str(combinedQuaternion[0]))
+                		print("\nY : " + str(combinedQuaternion[1]))
+                		print("\nZ : " + str(combinedQuaternion[2]))
+                		print("\nTheta : " + str(combinedQuaternion[3]))
+                		print ("\n\n")
+				cmd.rotate([combinedQuaternion[0],combinedQuaternion[1],combinedQuaternion[2]],angle=combinedQuaternion[3],selection = "all")
+            		else:
+                		self.client_socket.close()
+                		#self.connected=False
+                		self.server_socket.close()
+                		self.connected = False
+                		print("Disconnected")
+                		break
+		except:
+			pass
 
         #self.client_socket.close()
 
