@@ -1,4 +1,3 @@
-
 '''This file is part of AirMol.
     AirMol is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -10,6 +9,7 @@
     GNU General Public License for more details.
     You should have received a copy of the GNU General Public License
 along with AirMol. If not, see <http://www.gnu.org/licenses/>.'''
+
 from math import acos,asin,pi,sin
 import socket
 import tkMessageBox
@@ -47,14 +47,14 @@ class IPserver(Thread):
             		if(data):
 
                 		currentQuaternion = [float(i) for i in (data.split(','))]
-                		print("current:"+str(currentQuaternion)) 
+                		#print("current:"+str(currentQuaternion)) 
                 		conjugatedQuaternion=[-1*i for i in currentQuaternion[:3]]
                 		conjugatedQuaternion.append(currentQuaternion[3])
-                		print("conjugated:"+str(conjugatedQuaternion)) 
-                		q1=self.lastQuaternion
-                		print("q1:"+str(q1)) 
-                		q2=conjugatedQuaternion
-                		print("q2:"+str(q2)) 
+                		#print("conjugated:"+str(conjugatedQuaternion)) 
+                		q1=conjugatedQuaternion
+                		#print("q1:"+str(q1)) 
+                                q2=self.lastQuaternion
+                		#print("q2:"+str(q2)) 
                 
                 		combinedQuaternion=[
                 	        q1[3]*q2[0]+q1[0]*q2[3]+q1[1]*q2[2]-q1[2]*q2[1],
@@ -63,23 +63,25 @@ class IPserver(Thread):
                 	        q1[3]*q2[3]-q1[0]*q2[0]-q1[1]*q2[1]-q1[2]*q2[2]
                 	        ]
                 
-               			print("conbined:"+str(combinedQuaternion)) 
+               			#print("combined:"+str(combinedQuaternion))
+                                print("magnitude:"+str(combinedQuaternion[0]**2+combinedQuaternion[1]**2+
+                                        combinedQuaternion[2]**2+combinedQuaternion[3]**2))
                 		self.lastQuaternion=[i for i in currentQuaternion]
                 
                 		thetaRad=(2.0*acos(combinedQuaternion[3]))
                 		thetaDeg=(thetaRad*180.0/pi)
                 		sinThetaSurDeux=sin(thetaRad/2)
 
-                		for i in range(3):
+                		for i in range(2):
                 		    combinedQuaternion[i]/=sinThetaSurDeux
                 		combinedQuaternion[3]=thetaDeg
 
-                		print("\nX : " + str(combinedQuaternion[0]))
-                		print("\nY : " + str(combinedQuaternion[1]))
-                		print("\nZ : " + str(combinedQuaternion[2]))
+                		#print("\nX : " + str(combinedQuaternion[0]))
+                		#print("\nY : " + str(combinedQuaternion[1]))
+                		#print("\nZ : " + str(combinedQuaternion[2]))
                 		print("\nTheta : " + str(combinedQuaternion[3]))
                 		print ("\n\n")
-				cmd.rotate([combinedQuaternion[0],combinedQuaternion[1],combinedQuaternion[2]],angle=combinedQuaternion[3],selection = "all")
+				cmd.rotate([combinedQuaternion[0],combinedQuaternion[1],combinedQuaternion[2]],angle=-combinedQuaternion[3]/2)
             		else:
                 		self.client_socket.close()
                 		#self.connected=False
@@ -128,7 +130,3 @@ def airMol(self):
     
     
 cmd.extend('airMol', airMol)
-
-
-
-
