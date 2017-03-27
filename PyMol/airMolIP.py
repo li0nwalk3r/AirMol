@@ -55,7 +55,7 @@ class IPserver(Thread):
 
                     # Envoyer les valeurs de quaternion et recuperer theta apres
 
-                data = self.client_socket.recv(1024).decode('utf-8')
+                data = self.client_socket.recv(200).decode('utf-8')
                 if data:
 
                     SplitData = [float(i) for i in (data.split(','))]
