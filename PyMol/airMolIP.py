@@ -58,54 +58,12 @@ class IPserver(Thread):
                 data = self.client_socket.recv(1024).decode('utf-8')
                 if data:
 
-                    currentQuaternion = [float(i) for i in
-                            data.split(',')]
-                    print 'current:' + str(currentQuaternion)
-                    conjugatedQuaternion = [-1 * i for i in
-                            currentQuaternion[:3]]
-                    conjugatedQuaternion.append(currentQuaternion[3])
-                    print 'conjugated:' + str(conjugatedQuaternion)
-                    q1 = conjugatedQuaternion
-                    print 'q1:' + str(q1)
-                    q2 = self.lastQuaternion
-                    print 'q2:' + str(q2)
-
-                    combinedQuaternion = [q1[3] * q2[0] + q1[0] * q2[3]
-                            + q1[1] * q2[2] - q1[2] * q2[1], q1[3]
-                            * q2[1] - q1[0] * q2[2] + q1[1] * q2[3]
-                            + q1[2] * q2[0], q1[3] * q2[2] + q1[0]
-                            * q2[1] - q1[1] * q2[0] + q1[2] * q2[3],
-                            q1[3] * q2[3] - q1[0] * q2[0] - q1[1]
-                            * q2[1] - q1[2] * q2[2]]
-
-                    print 'combined:' + str(combinedQuaternion)
-                    print 'magnitude:' + str(combinedQuaternion[0] ** 2
-                            + combinedQuaternion[1] ** 2
-                            + combinedQuaternion[2] ** 2
-                            + combinedQuaternion[3] ** 2)
-                    self.lastQuaternion = [i for i in currentQuaternion]
-
-                    thetaRad = 2.0 * acos(combinedQuaternion[3])
-                    thetaDeg = thetaRad * 180.0 / pi
-                    sinThetaSurDeux = sin(thetaRad / 2)
-
-                    for i in range(2):
-                        combinedQuaternion[i] /= sinThetaSurDeux
-                    combinedQuaternion[3] = thetaDeg
-
-                    print '\nX : ' + str(combinedQuaternion[0])
-                    print '\nY : ' + str(combinedQuaternion[1])
-                    print '\nZ : ' + str(combinedQuaternion[2])
-                    print '\nTheta : ' + str(combinedQuaternion[3])
-                    print '''
-
-'''
-
-                    if combinedQuaternion[3] >= 1:
-                        cmd.rotate([-6 * combinedQuaternion[0], -6
-                                   * combinedQuaternion[1], -6
-                                   * combinedQuaternion[2]], angle=3
-                                   * combinedQuaternion[3],
+                    SplitData = [float(i) for i in (data.split(','))]
+                    if SplitData[3] >= 1:
+                        cmd.rotate([-6 * SplitData[0], -6
+                                   * SplitData[1], -6
+                                   * SplitData[2]], angle=3
+                                   * SplitData[3],
                                    selection='all')
                     else:
                         pass
