@@ -52,12 +52,8 @@ class IPserver(Thread):
         print 'connected'
         while True:
             try:
-
-                    # Envoyer les valeurs de quaternion et recuperer theta apres
-
                 data = self.client_socket.recv(200).decode('utf-8')
                 if data:
-
                     SplitData = [float(i) for i in (data.split(','))]
                     if SplitData[3] >= 1:
                         cmd.rotate([-6 * SplitData[0], -6
