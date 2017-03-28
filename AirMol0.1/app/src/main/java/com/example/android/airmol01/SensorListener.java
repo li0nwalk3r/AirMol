@@ -54,7 +54,7 @@ public class SensorListener implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent event) {
         float[] currentQ = event.values;
-
+/*
         float[] conjugatedQ=new float[4];
         for(int i=0;i<3;i++){
             conjugatedQ[i]=-currentQ[i];
@@ -73,19 +73,19 @@ public class SensorListener implements SensorEventListener {
         }
 
         //this.lastQ=currentQ;
-
-        float thetaRad = (float) (2.0f * Math.acos(combinedQ[3]));
+*/
+        float thetaRad = (float) (2.0f * Math.acos(currentQ[3]));
         float thetaDeg = (float) (thetaRad * 180.0f/Math.PI);
         float sinThetaSurDeux = (float) Math.sin(thetaRad/2);
         for (int i = 0; i < 3; i ++){
-            combinedQ[i]/=sinThetaSurDeux;
+            currentQ[i]/=sinThetaSurDeux;
         }
-        combinedQ[3] = thetaDeg;
+        currentQ[3] = thetaDeg;
 
-        String x = String.valueOf(truncate(combinedQ[0]));
-        String y = String.valueOf(truncate(combinedQ[1]));
-        String z = String.valueOf(truncate(combinedQ[2]));
-        String theta = String.valueOf(truncate(combinedQ[3]));
+        String x = String.valueOf(truncate(currentQ[0]));
+        String y = String.valueOf(truncate(currentQ[1]));
+        String z = String.valueOf(truncate(currentQ[2]));
+        String theta = String.valueOf(truncate(currentQ[3]));
 
         String finalResult = x + ',' + y + ',' + z + ',' + theta;
         byte[] toSend = finalResult.getBytes();
