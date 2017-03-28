@@ -39,8 +39,10 @@
         android:id="@+id/IP"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:inputType="number"
+        android:digits="0123456789."
         android:layout_marginTop="20dp"
-        android:hint="IP du serveur"
+        android:hint="IP du serveur : Indication on PyMol plugin"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="150dp" />
 
@@ -53,6 +55,15 @@
         android:text="Connection"
         tools:layout_editor_absoluteX="8dp"
         tools:layout_editor_absoluteY="20dp" />
+
+    <Button
+        android:id="@+id/Lock"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="LOCK"
+        android:layout_marginTop="80dp"
+        android:layout_marginBottom="80dp"
+        />
 
     <Button
         android:id="@+id/deconnection"

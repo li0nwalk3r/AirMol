@@ -2,10 +2,10 @@ package com.example.android.airmol01;
 
 import android.content.Context;
 import android.os.Looper;
-import android.util.Log;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 /**
  * Created by thomas on 24/03/17.
@@ -27,13 +27,27 @@ public class ConnectClient extends Thread{
         Looper.prepare();
         try {
             this.Socket = new Socket(this.ipServer, this.port);
+            this.sensorListener = new SensorListener(this.Socket, this.context);
+            this.sensorListener.register();
+        } catch (UnknownHostException e){
+            e.printStackTrace();
+            closeSocket();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        this.sensorListener = new SensorListener(this.Socket, this.context);
-        this.sensorListener.register();
         Looper.loop();
+    }
+
+    public void lockRotation() {
+        if (this.Socket != null) {
+            this.sensorListener.unregister();
+        }
+    }
+
+    public void unlockRotation(){
+        if (this.Socket != null) {
+            this.sensorListener.register();
+        }
     }
 
     public void cancel(){
@@ -42,6 +56,16 @@ public class ConnectClient extends Thread{
             this.Socket.close();
         }catch (IOException e){
             e.printStackTrace();
+        }
+    }
+
+    public void closeSocket(){
+        if (this.Socket != null) {
+            try {
+                this.Socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
