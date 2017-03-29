@@ -36,6 +36,8 @@ public class SensorListener implements SensorEventListener {
     public DataOutputStream output;
     private Context context;
     private float[] lastQ={0.0f,0.0f,0.0f,1.0f};
+    private float[] gravityValues = null;
+    private float[] magneticValues = null;
 
     public SensorListener(Socket socket, Context context) {
         this.socket = socket;
@@ -53,8 +55,9 @@ public class SensorListener implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+        if ((gravityValues != null) && (magneticValues != null)
+                && (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR)) {
         float[] currentQ = event.values;
-
         float[] conjugatedQ=new float[4];
         for(int i=0;i<3;i++){
             conjugatedQ[i]=-currentQ[i];
@@ -68,19 +71,27 @@ public class SensorListener implements SensorEventListener {
                 conjugatedQ[3]*this.lastQ[3]-conjugatedQ[0]*this.lastQ[0]-conjugatedQ[1]*this.lastQ[1]-conjugatedQ[2]*this.lastQ[2]
         };
 
-        for (int i = 0; i < lastQ.length; i++){
-            lastQ[i] = currentQ[i];
-        }
+        this.lastQ=currentQ;
 
-        //this.lastQ=currentQ;
+            float[] R = new float[16], I = new float[16], earthVector = new float[16];
+
+            SensorManager.getRotationMatrix(R, I, gravityValues, magneticValues);
+
+            float[] inv = new float[16];
+
+            android.opengl.Matrix.invertM(inv, 0, R, 0);
+            android.opengl.Matrix.multiplyMV(earthVector, 0, inv, 0, combinedQ, 0);
+
 
         float thetaRad = (float) (2.0f * Math.acos(combinedQ[3]));
         float thetaDeg = (float) (thetaRad * 180.0f/Math.PI);
         float sinThetaSurDeux = (float) Math.sin(thetaRad/2);
         for (int i = 0; i < 3; i ++){
-            combinedQ[i]/=sinThetaSurDeux;
+            currentQ[i]/=sinThetaSurDeux;
         }
         combinedQ[3] = thetaDeg;
+
+
 
         String x = String.valueOf(truncate(combinedQ[0]));
         String y = String.valueOf(truncate(combinedQ[1]));
@@ -95,13 +106,18 @@ public class SensorListener implements SensorEventListener {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        } else if (event.sensor.getType() == Sensor.TYPE_GRAVITY) {
+            gravityValues = event.values;
+        } else if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+            magneticValues = event.values;
+        }
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {}
 
     public void register(){
-        sensor.registerListener(this, rotationVector, SensorManager.SENSOR_DELAY_FASTEST);
+        sensor.registerListener(this, rotationVector, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     public void unregister(){
