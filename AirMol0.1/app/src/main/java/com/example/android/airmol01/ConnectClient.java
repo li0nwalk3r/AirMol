@@ -14,11 +14,11 @@ import java.net.UnknownHostException;
 public class ConnectClient extends Thread{
     private Socket Socket;
     private String ipServer;
-    private final int port = 8888;
+    private final int port = 49776;
     private Context context;
     private SensorListener sensorListener;
 
-    public ConnectClient(String ipServer, Context context) throws IOException {
+    public ConnectClient(String ipServer, Context context){
         this.ipServer = ipServer;
         this.context = context;
     }
@@ -31,7 +31,6 @@ public class ConnectClient extends Thread{
             this.sensorListener.register();
         } catch (UnknownHostException e){
             e.printStackTrace();
-            closeSocket();
         } catch (IOException e) {
             e.printStackTrace();
         }

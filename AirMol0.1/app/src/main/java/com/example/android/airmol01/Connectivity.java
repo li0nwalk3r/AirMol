@@ -53,11 +53,7 @@ public class Connectivity extends AppCompatActivity  {
                 ipServer = input.getText().toString();
 
                 if (!ipServer.equals("")) {
-                    try {
-                        client = new ConnectClient(ipServer, context);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    client = new ConnectClient(ipServer, context);
                     connection.setEnabled(false);
                     deconnection.setEnabled(true);
                     client.start();

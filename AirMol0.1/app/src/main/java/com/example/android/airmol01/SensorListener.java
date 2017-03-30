@@ -23,6 +23,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.opengl.Matrix;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -42,7 +43,9 @@ public class SensorListener implements SensorEventListener {
         this.context = context;
 
         sensor = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+
         rotationVector = sensor.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+
         try {
             output = new DataOutputStream(socket.getOutputStream());
         } catch (IOException e) {
@@ -54,6 +57,8 @@ public class SensorListener implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent event) {
         float[] currentQ = event.values;
+
+
 
         float[] conjugatedQ=new float[4];
         for(int i=0;i<3;i++){
@@ -82,10 +87,17 @@ public class SensorListener implements SensorEventListener {
         }
         combinedQ[3] = thetaDeg;
 
+        float[] rt = new float[9];
+        float[] toTest = {combinedQ[0], combinedQ[1], combinedQ[2]};
+        SensorManager.getRotationMatrixFromVector(rt, toTest);
+
+
         String x = String.valueOf(truncate(combinedQ[0]));
         String y = String.valueOf(truncate(combinedQ[1]));
         String z = String.valueOf(truncate(combinedQ[2]));
         String theta = String.valueOf(truncate(combinedQ[3]));
+
+        //String time = String.valueOf(System.currentTimeMillis());
 
         String finalResult = x + ',' + y + ',' + z + ',' + theta;
         byte[] toSend = finalResult.getBytes();

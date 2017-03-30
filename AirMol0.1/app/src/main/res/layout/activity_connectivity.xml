@@ -30,7 +30,7 @@
         android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Connection au serveur\nPORT : 8888"
+        android:text="Connection au serveur\nPORT : 49776"
         android:textAlignment="center"
         android:textSize="20sp"
         android:layout_marginTop="20dp"/>
@@ -71,5 +71,12 @@
         android:layout_height="wrap_content"
         android:text="Deconnection"
         android:layout_marginTop="20dp"/>
+
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="100"
+        />
 
 </LinearLayout>
